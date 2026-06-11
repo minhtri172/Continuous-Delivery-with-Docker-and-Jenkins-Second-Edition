@@ -36,14 +36,15 @@ pipeline {
                 cd Chapter08/sample1
                 ./gradlew checkstyleMain
                 """
+
+                publishHTML(
+                    target: [
+                        reportDir: 'Chapter08/sample1/build/reports/checkstyle',
+                        reportFiles: 'main.html',
+                        reportName: "JaCoCo Checkstyle"
+                    ]
+                )
             }
-            publishHTML(
-                target: [
-                    reportDir: 'Chapter08/sample1/build/reports/checkstyle',
-                    reportFiles: 'main.html',
-                    reportName: "JaCoCo Checkstyle"
-                ]
-            )
         }
     }
 }
