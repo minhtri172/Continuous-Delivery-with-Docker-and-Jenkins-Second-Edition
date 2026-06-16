@@ -4,7 +4,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 /**
- * Calculator Service hello
+ * Calculator Service
  */
 @Service
 public class Calculator {
