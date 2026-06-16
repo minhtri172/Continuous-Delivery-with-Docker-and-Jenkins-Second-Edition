@@ -1,90 +1,74 @@
 pipeline {
-     agent any
-     triggers {
-          pollSCM('* * * * *')
-     }
-     stages {
-          stage("Compile") {
-               steps {
-                    sh "./gradlew compileJava"
-               }
-          }
-          stage("Unit test") {
-               steps {
-                    sh "./gradlew test"
-               }
-          }
-          stage("Code coverage") {
-               steps {
-                    sh "./gradlew jacocoTestReport"
-                    sh "./gradlew jacocoTestCoverageVerification"
-               }
-          }
-          stage("Static code analysis") {
-               steps {
-                    sh "./gradlew checkstyleMain"
-               }
-          }
-          stage("Package") {
-               steps {
-                    sh "./gradlew build"
-               }
-          }
+    agent {
+        label 'docker-agent'
+    }
+    
+    stages {
+        stage('Checkout code and prepare environment') {
+            steps {
+                git url: 'https://github.com/minhtri172/Continuous-Delivery-with-Docker-and-Jenkins-Second-Edition.git', branch: 'master'
+                sh """
+                cd Chapter08/sample1
+                chmod +x gradlew 
+                """
+            }
+        }
+        stage('Compile code') {
+            steps {
+                sh """
+                cd Chapter08/sample1
+                ./gradlew compileJava
+                """
+            }
+        }
+        stage('Check Java Changes and Run code coverage and checkstyle') {
+            when {
+                changeset "**/src/*.java"
+            }
+            steps {
+                echo "Java files have changed. Run code coverage and checkstyle"
+                sh """
+                cd Chapter08/sample1
+				./gradlew jacocoTestCoverageVerification
+                ./gradlew jacocoTestReport 
+                ./gradlew checkstyleMain
+                """
 
-          stage("Docker build") {
-               steps {
-                    sh "docker build -t leszko/calculator:${BUILD_TIMESTAMP} ."
-               }
-          }
+                publishHTML(
+                    target: [
+                        reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html',
+                        reportFiles: 'index.html',
+                        reportName: "JaCoCo Code Coverage Report"
+                    ]
+                )
 
-          stage("Docker login") {
-               steps {
-                    withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'docker-hub-credentials',
-                               usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-                         sh "docker login --username $USERNAME --password $PASSWORD"
-                    }
-               }
-          }
+                publishHTML(
+                    target: [
+                        reportDir: 'Chapter08/sample1/build/reports/checkstyle',
+                        reportFiles: 'main.html',
+                        reportName: "JaCoCo Checkstyle"
+                    ]
+                )
+            }
+        }
+        stage('Run test, code coverage and generate reports') {
+            when {
+                changeset "**/*"
+            }
+            steps {
+                sh """
+                cd Chapter08/sample1
+                ./gradlew test
+                """
 
-          stage("Docker push") {
-               steps {
-                    sh "docker push leszko/calculator:${BUILD_TIMESTAMP}"
-               }
-          }
-
-          stage("Update version") {
-               steps {
-                    sh "sed  -i 's/{{VERSION}}/${BUILD_TIMESTAMP}/g' calculator.yaml"
-               }
-          }
-          
-          stage("Deploy to staging") {
-               steps {
-                    sh "kubectl config use-context staging"
-                    sh "kubectl apply -f hazelcast.yaml"
-                    sh "kubectl apply -f calculator.yaml"
-               }
-          }
-
-          stage("Acceptance test") {
-               steps {
-                    sleep 60
-                    sh "chmod +x acceptance-test.sh && ./acceptance-test.sh"
-               }
-          }
-
-          stage("Release") {
-               steps {
-                    sh "kubectl config use-context production"
-                    sh "kubectl apply -f hazelcast.yaml"
-                    sh "kubectl apply -f calculator.yaml"
-               }
-          }
-          stage("Smoke test") {
-              steps {
-                  sleep 60
-                  sh "chmod +x smoke-test.sh && ./smoke-test.sh"
-              }
-          }
-     }
+                publishHTML(
+                    target: [
+                        reportDir: 'Chapter08/sample1/build/reports/tests/test',
+                        reportFiles: 'index.html',
+                        reportName: "Test Report"
+                    ]
+                )
+            }
+        }
+    }
 }
