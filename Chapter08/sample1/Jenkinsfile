@@ -51,7 +51,7 @@ pipeline {
                 )
             }
         }
-        stage('Run test, code coverage and generate reports') {
+        stage('Run test') {
             when {
                 changeset "**/*"
             }
