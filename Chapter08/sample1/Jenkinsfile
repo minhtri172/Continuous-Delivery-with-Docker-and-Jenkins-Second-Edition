@@ -4,15 +4,6 @@ pipeline {
     }
     
     stages {
-        stage('Checkout code and prepare environment') {
-            steps {
-                git url: 'https://github.com/minhtri172/Continuous-Delivery-with-Docker-and-Jenkins-Second-Edition.git', branch: 'main'
-                sh """
-                cd Chapter08/sample1
-                chmod +x gradlew 
-                """
-            }
-        }
         stage('Run test') {
             steps {
                 sh """
