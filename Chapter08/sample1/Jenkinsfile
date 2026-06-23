@@ -29,7 +29,7 @@ pipeline {
                 branch '*feature*'
             }
             steps {
-                echo "Java files have changed. Run code coverage and checkstyle"
+                echo "Run unit test and checkstyle"
                 sh """
                 cd Chapter08/sample1
 				./gradlew test checkstyleMain
