@@ -4,33 +4,14 @@ pipeline {
     }
     
     stages {
-        stage('Run test') {
-            steps {
-                sh """
-                cd Chapter08/sample1
-                ./gradlew test
-                """
-
-                publishHTML(
-                    target: [
-                        reportDir: 'Chapter08/sample1/build/reports/tests/test',
-                        reportFiles: 'index.html',
-                        reportName: "Test Report"
-                    ]
-                )
-            }
-        }
-        stage('Check Java Changes and Run code coverage and checkstyle') {
+        stage('Run code coverage test') {
             when {
-                changeset "**/src/**/*.java"
+                { branch 'main' }
             }
             steps {
-                echo "Java files have changed. Run code coverage and checkstyle"
                 sh """
                 cd Chapter08/sample1
-				./gradlew jacocoTestCoverageVerification
-                ./gradlew jacocoTestReport 
-                ./gradlew checkstyleMain
+                ./gradlew test jacocoTestCoverageVerification jacocoTestReport
                 """
 
                 publishHTML(
@@ -38,6 +19,27 @@ pipeline {
                         reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html',
                         reportFiles: 'index.html',
                         reportName: "JaCoCo Code Coverage Report"
+                    ]
+                )
+            }
+        }
+
+        stage('Run unit test and checkstyle') {
+            when {
+                { branch '*feature*' }
+            }
+            steps {
+                echo "Java files have changed. Run code coverage and checkstyle"
+                sh """
+                cd Chapter08/sample1
+				./gradlew test checkstyleMain
+                """
+
+                publishHTML(
+                    target: [
+                        reportDir: 'Chapter08/sample1/build/reports/tests/test',
+                        reportFiles: 'index.html',
+                        reportName: "Test Report"
                     ]
                 )
 
@@ -49,7 +51,21 @@ pipeline {
                     ]
                 )
             }
-        }    
+        }  
+
+        stage('Invalid branch') {
+            when {
+                not {
+                    anyOf {
+                        branch 'main'
+                        branch '*feature*'
+                    }
+                }
+            }
+            steps {
+                error "ERROR!!! ${env.BRANCH_NAME} is not a valid branch!"
+            }
+        }
     }
 
     post {
