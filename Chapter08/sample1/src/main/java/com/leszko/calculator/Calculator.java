@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Calculator Service hello devops 2026
+ * Hi from feature branch
  */
 @Service
 public class Calculator {
