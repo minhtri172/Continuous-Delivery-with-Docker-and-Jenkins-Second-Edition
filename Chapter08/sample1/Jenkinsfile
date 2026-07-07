@@ -2,78 +2,66 @@ pipeline {
     agent {
         label 'docker-agent'
     }
-    
+
     stages {
         stage('Run code coverage test') {
             when {
                 branch 'main'
             }
             steps {
-                sh """
+                sh '''
                 cd Chapter08/sample1
                 ./gradlew test jacocoTestCoverageVerification jacocoTestReport
-                """
-
-                publishHTML(
-                    target: [
-                        reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html',
-                        reportFiles: 'index.html',
-                        reportName: "JaCoCo Code Coverage Report"
-                    ]
-                )
+                '''
             }
         }
 
         stage('Run unit test and checkstyle') {
-            when {
-                branch '*feature*'
-            }
             steps {
-                echo "Run unit test and checkstyle"
-                sh """
+                echo 'Run unit tests and checkstyle'
+                sh '''
                 cd Chapter08/sample1
-				./gradlew test checkstyleMain
-                """
-
-                publishHTML(
-                    target: [
-                        reportDir: 'Chapter08/sample1/build/reports/tests/test',
-                        reportFiles: 'index.html',
-                        reportName: "Test Report"
-                    ]
-                )
-
-                publishHTML(
-                    target: [
-                        reportDir: 'Chapter08/sample1/build/reports/checkstyle',
-                        reportFiles: 'main.html',
-                        reportName: "JaCoCo Checkstyle"
-                    ]
-                )
-            }
-        }  
-
-        stage('Invalid branch') {
-            when {
-                not {
-                    anyOf {
-                        branch 'main'
-                        branch '*feature*'
-                    }
-                }
-            }
-            steps {
-                error "ERROR!!! ${env.BRANCH_NAME} is not a valid branch!"
+                ./gradlew test checkstyleMain
+                '''
             }
         }
     }
 
     post {
-        failure {
-            echo 'pipeline failure'
+        always {
+            publishHTML(
+                    target: [
+                        allowMissing: true,
+                        reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html',
+                        reportFiles: 'index.html',
+                        reportName: 'JaCoCo Code Coverage Report'
+                    ]
+                )
+            publishHTML(
+                    target: [
+                        allowMissing: true,
+                        reportDir: 'Chapter08/sample1/build/reports/tests/test',
+                        reportFiles: 'index.html',
+                        reportName: 'Test Report'
+                    ]
+                )
+
+            publishHTML(
+                    target: [
+                        allowMissing: true,
+                        reportDir: 'Chapter08/sample1/build/reports/checkstyle',
+                        reportFiles: 'main.html',
+                        reportName: 'JaCoCo Checkstyle'
+                    ]
+                )
         }
+
+        failure {
+            echo 'tests fail!'
+        }
+
         success {
-            echo 'pipeline ran perfectly'
+            echo 'tests pass!'
         }
     }
 }
