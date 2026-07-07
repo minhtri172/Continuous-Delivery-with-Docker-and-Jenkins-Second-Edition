@@ -61,11 +61,12 @@ pipeline {
         }
 
         failure {
-            echo 'tests fail!'
+            githubNotify context: 'Jenkins/Unit-Tests', status: 'FAILURE', description: 'tests fail!'
+
         }
 
         success {
-            echo 'tests pass!'
+            githubNotify context: 'Jenkins/Unit-Tests', status: 'SUCCESS', description: 'tests pass!'
         }
     }
 }
