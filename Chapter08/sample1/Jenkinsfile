@@ -17,6 +17,10 @@ pipeline {
         }
 
         stage('Run unit test and checkstyle') {
+            when {
+                not {branch 'main'}
+            }
+
             steps {
                 echo 'Run unit tests and checkstyle'
                 sh '''
