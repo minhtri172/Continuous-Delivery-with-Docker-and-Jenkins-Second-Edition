@@ -38,25 +38,7 @@ pipeline {
                         allowMissing: true,
                         reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html',
                         reportFiles: 'index.html',
-                        reportName: 'JaCoCo Code Coverage Report'
-                    ]
-                )
-                
-            publishHTML(
-                    target: [
-                        allowMissing: true,
-                        reportDir: 'Chapter08/sample1/build/reports/tests/test',
-                        reportFiles: 'index.html',
-                        reportName: 'Test Report'
-                    ]
-                )
-
-            publishHTML(
-                    target: [
-                        allowMissing: true,
-                        reportDir: 'Chapter08/sample1/build/reports/checkstyle',
-                        reportFiles: 'main.html',
-                        reportName: 'JaCoCo Checkstyle'
+                        reportName: 'JaCoCo Report'
                     ]
                 )
         }
