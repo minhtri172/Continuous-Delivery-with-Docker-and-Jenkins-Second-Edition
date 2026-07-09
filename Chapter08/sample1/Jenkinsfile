@@ -13,20 +13,12 @@ pipeline {
                 cd Chapter08/sample1
                 ./gradlew test jacocoTestCoverageVerification jacocoTestReport
                 '''
-
-                publishHTML(
-                    target: [
-                        reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html',
-                        reportFiles: 'index.html',
-                        reportName: 'JaCoCo Code Coverage Report'
-                    ]
-                )
             }
         }
 
         stage('Run unit test and checkstyle') {
             when {
-                not {branch 'main'}
+                not { branch 'main' }
             }
 
             steps {
@@ -35,8 +27,21 @@ pipeline {
                 cd Chapter08/sample1
                 ./gradlew test checkstyleMain
                 '''
+            }
+        }
+    }
 
-                publishHTML(
+    post {
+        always {
+            publishHTML(
+                    target: [
+                        allowMissing: true,
+                        reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html',
+                        reportFiles: 'index.html',
+                        reportName: 'JaCoCo Code Coverage Report'
+                    ]
+                )
+            publishHTML(
                     target: [
                         allowMissing: true,
                         reportDir: 'Chapter08/sample1/build/reports/tests/test',
@@ -45,7 +50,7 @@ pipeline {
                     ]
                 )
 
-                publishHTML(
+            publishHTML(
                     target: [
                         allowMissing: true,
                         reportDir: 'Chapter08/sample1/build/reports/checkstyle',
@@ -53,11 +58,8 @@ pipeline {
                         reportName: 'JaCoCo Checkstyle'
                     ]
                 )
-            }
         }
-    }
 
-    post {
         failure {
             echo 'tests fail!'
         }
