@@ -50,16 +50,15 @@ pipeline {
                         reportName: 'JaCoCo Code Coverage Report'
                     ]
                 )
-            publishHTML(
-                    target: [
+                
+            publishHTML([
                         allowMissing: true,
                         alwaysLinkToLastBuild: false,
                         reportDir: 'Chapter08/sample1/build/reports/tests/test',
                         reportFiles: 'index.html',
                         reportName: 'Test Report',
                         archiveByProject: false
-                    ]
-                )
+                ])
 
             publishHTML(
                     target: [
