@@ -13,15 +13,6 @@ pipeline {
                 cd Chapter08/sample1
                 ./gradlew test jacocoTestCoverageVerification jacocoTestReport
                 '''
-
-                publishHTML(
-                    target: [
-                        allowMissing: true,
-                        reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html',
-                        reportFiles: 'index.html',
-                        reportName: 'JaCoCo Code Coverage Report'
-                    ]
-                )
             }
         }
 
@@ -34,7 +25,7 @@ pipeline {
                 echo 'Run unit tests and checkstyle'
                 sh '''
                 cd Chapter08/sample1
-                ./gradlew test checkstyleMain
+                ./gradlew test checkstyleMain --continue
                 '''
             }
         }
@@ -53,11 +44,9 @@ pipeline {
             publishHTML(
                     target: [
                         allowMissing: true,
-                        alwaysLinkToLastBuild: false,
                         reportDir: 'Chapter08/sample1/build/reports/tests/test',
                         reportFiles: 'index.html',
-                        reportName: 'Test Report',
-                        archiveByProject: false
+                        reportName: 'Test Report'
                     ]
                 )
 
