@@ -13,6 +13,14 @@ pipeline {
                 cd Chapter08/sample1
                 ./gradlew test jacocoTestCoverageVerification jacocoTestReport
                 '''
+
+                publishHTML(
+                    target: [
+                        reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html',
+                        reportFiles: 'index.html',
+                        reportName: 'JaCoCo Code Coverage Report'
+                    ]
+                )
             }
         }
 
@@ -27,21 +35,8 @@ pipeline {
                 cd Chapter08/sample1
                 ./gradlew test checkstyleMain
                 '''
-            }
-        }
-    }
 
-    post {
-        always {
-            publishHTML(
-                    target: [
-                        allowMissing: true,
-                        reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html',
-                        reportFiles: 'index.html',
-                        reportName: 'JaCoCo Code Coverage Report'
-                    ]
-                )
-            publishHTML(
+                publishHTML(
                     target: [
                         allowMissing: true,
                         reportDir: 'Chapter08/sample1/build/reports/tests/test',
@@ -50,7 +45,7 @@ pipeline {
                     ]
                 )
 
-            publishHTML(
+                publishHTML(
                     target: [
                         allowMissing: true,
                         reportDir: 'Chapter08/sample1/build/reports/checkstyle',
@@ -58,14 +53,17 @@ pipeline {
                         reportName: 'JaCoCo Checkstyle'
                     ]
                 )
+            }
         }
+    }
 
+    post {
         failure {
-            githubNotify context: 'Jenkins/Unit-Tests', status: 'FAILURE', description: 'tests fail!'
+            echo 'tests fail!'
         }
 
         success {
-            githubNotify context: 'Jenkins/Unit-Tests', status: 'SUCCESS', description: 'tests pass!'
+            echo 'tests pass!'
         }
     }
 }
