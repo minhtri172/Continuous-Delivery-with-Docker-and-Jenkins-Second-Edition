@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Run code coverage test') {
             when {
-               not {branch 'main'}
+                branch 'main'
             }
             steps {
                 sh '''
@@ -18,7 +18,7 @@ pipeline {
 
         stage('Run unit test and checkstyle') {
             when {
-                branch 'main'
+                not { branch 'main' }
             }
 
             steps {
@@ -41,7 +41,7 @@ pipeline {
                         reportName: 'JaCoCo Code Coverage Report'
                     ]
                 )
-
+                
             publishHTML(
                     target: [
                         allowMissing: true,
