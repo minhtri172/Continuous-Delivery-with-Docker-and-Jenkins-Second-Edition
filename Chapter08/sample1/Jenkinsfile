@@ -25,7 +25,7 @@ pipeline {
                 echo 'Run unit tests and checkstyle'
                 sh '''
                 cd Chapter08/sample1
-                ./gradlew test checkstyleMain --continue
+                ./gradlew test checkstyleMain
                 '''
             }
         }
