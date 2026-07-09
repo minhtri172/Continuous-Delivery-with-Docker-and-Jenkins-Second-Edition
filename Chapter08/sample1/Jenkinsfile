@@ -13,6 +13,16 @@ pipeline {
                 cd Chapter08/sample1
                 ./gradlew test jacocoTestCoverageVerification jacocoTestReport
                 '''
+
+                publishHTML(
+                    target: [
+                        alwaysLinkToLastBuild: false,
+                        reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html',
+                        reportFiles: 'index.html',
+                        reportName: 'JaCoCo Code Coverage Report',
+                        archiveByProject: false
+                    ]
+                )
             }
         }
 
@@ -27,39 +37,30 @@ pipeline {
                 cd Chapter08/sample1
                 ./gradlew test checkstyleMain
                 '''
+
+                publishHTML(
+                    target: [
+                        alwaysLinkToLastBuild: false,
+                        reportDir: 'Chapter08/sample1/build/reports/tests/test',
+                        reportFiles: 'index.html',
+                        reportName: 'Test Report',
+                        archiveByProject: false
+                    ]
+                )
+
+                publishHTML(
+                    target: [
+                        reportDir: 'Chapter08/sample1/build/reports/checkstyle',
+                        reportFiles: 'main.html',
+                        reportName: 'JaCoCo Checkstyle',
+                        archiveByProject: false
+                    ]
+                )
             }
         }
     }
 
     post {
-        always {
-            publishHTML(
-                    target: [
-                        allowMissing: true,
-                        reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html',
-                        reportFiles: 'index.html',
-                        reportName: 'JaCoCo Code Coverage Report'
-                    ]
-                )
-            publishHTML(
-                    target: [
-                        allowMissing: true,
-                        reportDir: 'Chapter08/sample1/build/reports/tests/test',
-                        reportFiles: 'index.html',
-                        reportName: 'Test Report'
-                    ]
-                )
-
-            publishHTML(
-                    target: [
-                        allowMissing: true,
-                        reportDir: 'Chapter08/sample1/build/reports/checkstyle',
-                        reportFiles: 'main.html',
-                        reportName: 'JaCoCo Checkstyle'
-                    ]
-                )
-        }
-
         failure {
             echo 'tests fail!'
         }
