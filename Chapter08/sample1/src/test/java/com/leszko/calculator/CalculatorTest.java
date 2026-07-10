@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 public class CalculatorTest {
      private Calculator calculator = new Calculator();
-     //private CalculatorApplication calculatorApplication = new CalculatorApplication();   
+     //private CalculatorApplication calculatorApplication = new CalculatorApplication();   1
      //private CalculatorController calculatorController = new CalculatorController();
 
      @Test
